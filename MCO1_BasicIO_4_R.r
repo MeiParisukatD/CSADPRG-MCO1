@@ -14,6 +14,15 @@ read_number <- function(prompt) {
   return(value)
 }
 
+read_name <- function(prompt) {
+  value <- trimws(readline(prompt))
+  while (value == "") {
+    cat("Invalid input. Name cannot be blank.\n")
+    value <- trimws(readline(prompt))
+  }
+  return(value)
+}
+
 # Constants
 DEFAULT_BALANCE  <- 1000
 DEFAULT_CURRENCY <- "PHP"
@@ -62,8 +71,8 @@ main_menu <- function() {
 # Register Account Name 
 register_account_name <- function() {
   cat("Register Account Name\n")
-  name <- readline("Account Name: ")
-
+  name <- read_name("Account Name: ")
+ 
   cat("\n***\n")
   cat(sprintf("Account Name = %s\n\n", name))
   name
@@ -72,7 +81,7 @@ register_account_name <- function() {
 # Deposit Amount
 deposit_amount <- function() {
   cat("Deposit Amount\n")
-  name <- readline("Account Name: ")
+  name <- read_name("Account Name: ")
   cat(sprintf("Current Balance: %.2f\n", DEFAULT_BALANCE))
   cat(sprintf("Currency: %s\n\n", DEFAULT_CURRENCY))
 
@@ -86,7 +95,7 @@ deposit_amount <- function() {
 # Withdraw Amount
 withdraw_amount <- function() {
   cat("Withdraw Amount\n")
-  name <- readline("Account Name: ")
+  name <- read_name("Account Name: ")
   cat(sprintf("Current Balance: %.2f\n", DEFAULT_BALANCE))
   cat(sprintf("Currency: %s\n\n", DEFAULT_CURRENCY))
 
@@ -104,6 +113,10 @@ record_exchange_rate <- function() {
   cat("\n")
 
   selected <- readline("Select Foreign Currency: ")
+  while (!(selected %in% c("1", "2", "3", "4", "5", "6"))) {
+    cat("Invalid choice. Please enter a number from 1 to 6.\n\n")
+    selected <- readline("Select Foreign Currency: ")
+  }
   rate <- read_number("Exchange Rate: ")
 
   cat("\n***\n")
