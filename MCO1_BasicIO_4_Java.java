@@ -62,6 +62,7 @@ public class MCO1_BasicIO_4_Java {
         System.out.println("[6] Show Interest Amount");
 
         int choice = readMenuChoice("Choice: ", 1, 6);
+        System.out.println();
         System.out.println("***");
         System.out.printf("Choice = %d%n%n", choice);
     }
@@ -69,6 +70,7 @@ public class MCO1_BasicIO_4_Java {
     private static void displayRegisterAccountName() {
         System.out.println("Register Account Name");
         String accountName = readNonBlankName("Account Name: ");
+        System.out.println();
         System.out.println("***");
         System.out.printf("Account Name = %s%n%n", accountName);
     }
@@ -79,6 +81,7 @@ public class MCO1_BasicIO_4_Java {
         System.out.println("Current Balance: 1000.00");
         System.out.println("Currency: PHP");
         double depositAmount = readAmount("Deposit Amount: ");
+        System.out.println();
         System.out.println("***");
         System.out.printf("Account Name = %s%n", accountName);
         System.out.printf(Locale.US, "Deposit Amount = %.2f%n%n", depositAmount);
@@ -90,6 +93,7 @@ public class MCO1_BasicIO_4_Java {
         System.out.println("Current Balance: 1000.00");
         System.out.println("Currency: PHP");
         double withdrawAmount = readAmount("Withdraw Amount: ");
+        System.out.println();
         System.out.println("***");
         System.out.printf("Account Name = %s%n", accountName);
         System.out.printf(Locale.US, "Withdraw Amount = %.2f%n%n", withdrawAmount);
@@ -112,6 +116,7 @@ public class MCO1_BasicIO_4_Java {
 
         int currencyChoice = readMenuChoice("Select Foreign Currency: ", 1, 6);
         double exchangeRate = readAmount("Exchange Rate: ");
+        System.out.println();
         System.out.println("***");
         System.out.printf("Select Foreign Currency = [%d] %s%n",
                 currencyChoice, currencyNames[currencyChoice - 1]);
@@ -138,6 +143,7 @@ public class MCO1_BasicIO_4_Java {
                     index + 1, currencyNames[index], sourceAmount * exchangeValues[index]);
         }
 
+        System.out.println();
         System.out.println("***");
         System.out.println("Source Currency = Philippine Peso (PHP)");
         System.out.printf(Locale.US, "Source Amount (PHP) = %.2f%n", sourceAmount);
