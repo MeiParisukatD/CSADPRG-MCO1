@@ -93,6 +93,8 @@ fun recordExchangeMenu(currencyList: List<Currency>){
     println()
     print("Select Foreign Currency: ")
         var foreignCurr = getString().trim('[', ']')
+    while (foreignCurr.toIntOrNull()== null || !(foreignCurr.toInt() in 1..currencyList.size)){ 
+        foreignCurr = getString().trim('[', ']')}
     print("Exchange Rate: ")
         var excRate = getDouble()
     divider()
