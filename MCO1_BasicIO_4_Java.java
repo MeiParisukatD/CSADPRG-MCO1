@@ -15,6 +15,16 @@ public class MCO1_BasicIO_4_Java {
         return INPUT.nextLine();
     }
 
+  private static String readNonBlankName(String prompt) {
+        while (true) {
+            String name = readLine(prompt);
+            if (!name.trim().isEmpty()) {
+                return name.trim();
+            }
+            System.out.println("Account name cannot be blank. Please enter a name.");
+        }
+    }
+
     private static double readAmount(String prompt) {
         while (true) {
             String line = readLine(prompt).trim();
