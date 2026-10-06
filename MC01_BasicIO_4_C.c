@@ -1,25 +1,75 @@
 /*
-Last Names: [LAST NAME 1], [LAST NAME 2], [LAST NAME 3]
-Language: C
-Paradigm: Imperative / Procedural
+Last Names: Hila, Katigbak, Mesa, Tumbocon
 Filename: MCO1_BasicIO_4_C.c
+Language: C
+Paradigm(s): Imperative / Procedural
 */
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
+void flushLine(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void readName(char name[], int size) {
+    char temp[100];
+    char *start;
+    size_t len;
+
+    do {
+        printf("Account Name: ");
+        if (fgets(temp, size, stdin) == NULL) {
+            temp[0] = '\0';
+        }
+        temp[strcspn(temp, "\n")] = '\0';
+
+        start = temp;
+        while (isspace((unsigned char)*start)) {
+            start++;
+        }
+
+        len = strlen(start);
+        while (len > 0 && isspace((unsigned char)start[len - 1])) {
+            start[--len] = '\0';
+        }
+
+        strcpy(name, start);
+
+        if (strlen(name) == 0) {
+            printf("Account name cannot be empty. Please try again.\n");
+        }
+
+    } while (strlen(name) == 0);
+}
+
+double readAmount(const char *prompt, const char *errorMsg) {
+    double value;
+
+    while (1) {
+        printf("%s", prompt);
+
+        if (scanf("%lf", &value) == 1) {
+            flushLine();
+            return value;
+        }
+
+        printf("%s\n", errorMsg);
+        flushLine();
+    }
+}
+
 int main() {
 
     int choice;
     char accountName[100];
-    char tempName[100];
     double amount;
     double balance = 1000.00;
     int currencyChoice;
     double exchangeRate;
 
-    /* MAIN MENU */
     printf("Select Transaction:\n");
     printf("[1] Register Account Name\n");
     printf("[2] Deposit Amount\n");
@@ -32,9 +82,9 @@ int main() {
         printf("\nChoice: ");
 
         if (scanf("%d", &choice) != 1) {
-            while (getchar() != '\n');
             choice = 0;
         }
+        flushLine();
 
         if (choice < 1 || choice > 6) {
             printf("Invalid choice. Please select 1-6.\n");
@@ -45,153 +95,62 @@ int main() {
     printf("\n***\n");
     printf("Choice = %d\n", choice);
 
+    printf("\nRegister Account Name\n");
 
-    /* REGISTER ACCOUNT NAME */
-    printf("\n\nRegister Account Name\n");
-
-    getchar();
-
-    do {
-        printf("Account Name: ");
-        fgets(accountName, sizeof(accountName), stdin);
-
-        accountName[strcspn(accountName, "\n")] = '\0';
-
-        /* Remove leading spaces */
-        strcpy(tempName, accountName);
-
-        char *start = tempName;
-        while (isspace((unsigned char)*start)) {
-            start++;
-        }
-
-        /* Remove trailing spaces */
-        char *end = start + strlen(start) - 1;
-
-        while (end >= start && isspace((unsigned char)*end)) {
-            *end = '\0';
-            end--;
-        }
-
-        strcpy(accountName, start);
-
-        if (strlen(accountName) == 0) {
-            printf("Account name cannot be empty. Please try again.\n");
-        }
-
-    } while (strlen(accountName) == 0);
+    readName(accountName, sizeof(accountName));
 
     printf("\n***\n");
     printf("Account Name = %s\n", accountName);
 
 
-    /* DEPOSIT AMOUNT */
-    printf("\n\nDeposit Amount\n");
+    printf("\nDeposit Amount\n");
 
-    printf("Account Name: ");
-    printf("%s\n", accountName);
+    readName(accountName, sizeof(accountName));
 
     printf("Current Balance: %.2f\n", balance);
     printf("Currency: PHP\n\n");
 
-    do {
-        printf("Deposit Amount: ");
-
-        if (scanf("%lf", &amount) != 1) {
-            printf("Invalid input. Please enter a valid amount.\n");
-            while (getchar() != '\n');
-            amount = 0;
-        } else {
-            break;
-        }
-
-    } while (1);
-
-    balance += amount;
+    amount = readAmount("Deposit Amount: ",
+                        "Invalid input. Please enter a valid amount.");
 
     printf("\n***\n");
     printf("Account Name = %s\n", accountName);
     printf("Deposit Amount = %.2f\n", amount);
 
 
-    /* WITHDRAW AMOUNT */
-    printf("\n\nWithdraw Amount\n");
+    printf("\nWithdraw Amount\n");
 
-    printf("Account Name: ");
-    printf("%s\n", accountName);
+    readName(accountName, sizeof(accountName));
 
     printf("Current Balance: %.2f\n", balance);
     printf("Currency: PHP\n\n");
 
-    do {
-        printf("Withdraw Amount: ");
-
-        if (scanf("%lf", &amount) != 1) {
-            printf("Invalid input. Please enter a valid amount.\n");
-            while (getchar() != '\n');
-            amount = 0;
-        } else {
-            break;
-        }
-
-    } while (1);
-
-    if (amount <= balance) {
-        balance -= amount;
-    }
+    amount = readAmount("Withdraw Amount: ",
+                        "Invalid input. Please enter a valid amount.");
 
     printf("\n***\n");
     printf("Account Name = %s\n", accountName);
     printf("Withdraw Amount = %.2f\n", amount);
 
-    if (amount > balance + amount) {
-        printf("Insufficient balance.\n");
-    }
+    printf("\nForeign Currency Exchange\n");
 
+    amount = readAmount("Source Amount (PHP): ",
+                        "Invalid input. Please enter a valid amount.");
 
-    /* CURRENCY EXCHANGE */
-    printf("\n\nForeign Currency Exchange\n");
+    printf("\nExchanged Currency\n");
 
-    printf("Source Amount (PHP): ");
-
-    do {
-        if (scanf("%lf", &amount) != 1) {
-            printf("Invalid input. Please enter a valid amount.\n");
-            while (getchar() != '\n');
-            amount = 0;
-        } else {
-            break;
-        }
-
-    } while (1);
-
-    printf("\nExchanged Currency\n\n");
-
-    printf("[1] Philippine Peso (PHP) = %.2f\n",
-           amount);
-
-    printf("[2] United States Dollar (USD) = %.2f\n",
-           amount * 62.00);
-
-    printf("[3] Japanese Yen (JPY) = %.2f\n",
-           amount * 0.40);
-
-    printf("[4] British Pound Sterling (GBP) = %.2f\n",
-           amount * 84.00);
-
-    printf("[5] Euro (EUR) = %.2f\n",
-           amount * 72.00);
-
-    printf("[6] Chinese Yuan Renminni (CNY) = %.2f\n",
-           amount * 9.00);
+    printf("[1] Philippine Peso (PHP) = %.2f\n", amount);
+    printf("[2] United States Dollar (USD) = %.2f\n", amount * 62.00);
+    printf("[3] Japanese Yen (JPY) = %.2f\n", amount * 0.40);
+    printf("[4] British Pound Sterling (GBP) = %.2f\n", amount * 84.00);
+    printf("[5] Euro (EUR) = %.2f\n", amount * 72.00);
+    printf("[6] Chinese Yuan Renminni (CNY) = %.2f\n", amount * 9.00);
 
     printf("\n***\n");
     printf("Source Currency = Philippine Peso (PHP)\n");
     printf("Source Amount (PHP) = %.2f\n", amount);
 
-
-    /* RECORD EXCHANGE RATE */
-    printf("\n\nRecord Exchange Rate\n");
+    printf("\nRecord Exchange Rate\n\n");
 
     printf("[1] Philippine Peso (PHP)\n");
     printf("[2] United States Dollar (USD)\n");
@@ -205,39 +164,23 @@ int main() {
 
         if (scanf("%d", &currencyChoice) != 1) {
             printf("Invalid input. Please enter a number from 1-6.\n");
-            while (getchar() != '\n');
             currencyChoice = 0;
-        }
-
-        if (currencyChoice < 1 || currencyChoice > 6) {
+        } else if (currencyChoice < 1 || currencyChoice > 6) {
             printf("Please select a currency from 1-6.\n");
         }
+        flushLine();
 
     } while (currencyChoice < 1 || currencyChoice > 6);
 
-    do {
-        printf("Exchange Rate: ");
-
-        if (scanf("%lf", &exchangeRate) != 1) {
-            printf("Invalid input. Please enter a valid exchange rate.\n");
-            while (getchar() != '\n');
-            exchangeRate = 0;
-        } else {
-            break;
-        }
-
-    } while (1);
+    exchangeRate = readAmount("Exchange Rate: ",
+                              "Invalid input. Please enter a valid exchange rate.");
 
     printf("\n***\n");
-    printf("Select Foreign Currency = [%d]\n",
-           currencyChoice);
-
-    printf("Exchange Rate = %.2f\n",
-           exchangeRate);
+    printf("Select Foreign Currency = [%d]\n", currencyChoice);
+    printf("Exchange Rate = %.2f\n", exchangeRate);
 
 
-    /* SHOW INTEREST AMOUNT */
-    printf("\n\nShow Interest Amount\n");
+    printf("\nShow Interest Amount\n");
 
     printf("\n***\n");
     printf("Interest Amount = 0.00\n");
