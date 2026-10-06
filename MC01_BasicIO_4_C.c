@@ -18,40 +18,77 @@ int main() {
     printf("[5] Record Exchange Rates\n");
     printf("[6] Show Interest Amount\n");
     printf("Choice: ");
-    scanf("%d", &choice);
+
+    if (scanf("%d", &choice) != 1) {
+        printf("Invalid input. Please enter a number from 1-6.\n");
+        return 0;
+    }
 
     printf("\nChoice = %d\n\n", choice);
 
     switch (choice) {
 
+        /* REGISTER ACCOUNT NAME */
         case 1:
+            printf("***\n");
             getchar();
 
             printf("Register Account Name\n");
-            printf("Account Name: ");
-            fgets(accountName, sizeof(accountName), stdin);
 
-            accountName[strcspn(accountName, "\n")] = '\0';
+            do {
+                printf("Account Name: ");
+                fgets(accountName, sizeof(accountName), stdin);
+
+                accountName[strcspn(accountName, "\n")] = '\0';
+
+                if (strlen(accountName) == 0) {
+                    printf("Account name cannot be empty. Please try again.\n");
+                }
+
+            } while (strlen(accountName) == 0);
 
             printf("\nAccount Name = %s\n", accountName);
 
             break;
 
 
+        /* DEPOSIT AMOUNT */
         case 2:
+            printf("***\n");
             getchar();
 
             printf("Deposit Amount\n");
 
-            printf("Account Name: ");
-            fgets(accountName, sizeof(accountName), stdin);
-            accountName[strcspn(accountName, "\n")] = '\0';
+            do {
+                printf("Account Name: ");
+                fgets(accountName, sizeof(accountName), stdin);
+
+                accountName[strcspn(accountName, "\n")] = '\0';
+
+                if (strlen(accountName) == 0) {
+                    printf("Account name cannot be empty. Please try again.\n");
+                }
+
+            } while (strlen(accountName) == 0);
 
             printf("Current Balance: %.2f\n", balance);
             printf("Currency: PHP\n");
 
-            printf("Deposit Amount: ");
-            scanf("%lf", &amount);
+            do {
+                printf("Deposit Amount: ");
+
+                if (scanf("%lf", &amount) != 1) {
+                    printf("Invalid input. Please enter a valid amount.\n");
+
+                    while (getchar() != '\n');
+                    amount = -1;
+                }
+
+                if (amount < 0) {
+                    printf("Deposit amount cannot be negative.\n");
+                }
+
+            } while (amount < 0);
 
             balance += amount;
 
@@ -61,20 +98,43 @@ int main() {
             break;
 
 
+        /* WITHDRAW AMOUNT */
         case 3:
+            printf("***\n");
             getchar();
 
             printf("Withdraw Amount\n");
 
-            printf("Account Name: ");
-            fgets(accountName, sizeof(accountName), stdin);
-            accountName[strcspn(accountName, "\n")] = '\0';
+            do {
+                printf("Account Name: ");
+                fgets(accountName, sizeof(accountName), stdin);
+
+                accountName[strcspn(accountName, "\n")] = '\0';
+
+                if (strlen(accountName) == 0) {
+                    printf("Account name cannot be empty. Please try again.\n");
+                }
+
+            } while (strlen(accountName) == 0);
 
             printf("Current Balance: %.2f\n", balance);
             printf("Currency: PHP\n");
 
-            printf("Withdraw Amount: ");
-            scanf("%lf", &amount);
+            do {
+                printf("Withdraw Amount: ");
+
+                if (scanf("%lf", &amount) != 1) {
+                    printf("Invalid input. Please enter a valid amount.\n");
+
+                    while (getchar() != '\n');
+                    amount = -1;
+                }
+
+                if (amount < 0) {
+                    printf("Withdrawal amount cannot be negative.\n");
+                }
+
+            } while (amount < 0);
 
             if (amount <= balance) {
 
@@ -92,11 +152,27 @@ int main() {
             break;
 
 
+        /* CURRENCY EXCHANGE */
         case 4:
+            printf("***\n");
+
             printf("Foreign Currency Exchange\n");
 
-            printf("Source Amount (PHP): ");
-            scanf("%lf", &amount);
+            do {
+                printf("Source Amount (PHP): ");
+
+                if (scanf("%lf", &amount) != 1) {
+                    printf("Invalid input. Please enter a valid amount.\n");
+
+                    while (getchar() != '\n');
+                    amount = -1;
+                }
+
+                if (amount < 0) {
+                    printf("Amount cannot be negative.\n");
+                }
+
+            } while (amount < 0);
 
             printf("\nExchanged Currency\n");
 
@@ -115,7 +191,7 @@ int main() {
             printf("[5] Euro (EUR) = %.2f\n",
                    amount * 72.00);
 
-            printf("[6] Chinese Yuan Renminni (CNY) = %.2f\n",
+            printf("[6] Chinese Yuan Renminbi (CNY) = %.2f\n",
                    amount * 9.00);
 
             printf("\nSource Currency = Philippine Peso (PHP)\n");
@@ -124,7 +200,10 @@ int main() {
             break;
 
 
+        /* RECORD EXCHANGE RATE */
         case 5:
+            printf("***\n");
+
             printf("Record Exchange Rate\n");
 
             printf("[1] Philippine Peso (PHP)\n");
@@ -132,13 +211,39 @@ int main() {
             printf("[3] Japanese Yen (JPY)\n");
             printf("[4] British Pound Sterling (GBP)\n");
             printf("[5] Euro (EUR)\n");
-            printf("[6] Chinese Yuan Renminni (CNY)\n");
+            printf("[6] Chinese Yuan Renminbi (CNY)\n");
 
-            printf("Select Foreign Currency: ");
-            scanf("%d", &currencyChoice);
+            do {
+                printf("Select Foreign Currency: ");
 
-            printf("Exchange Rate: ");
-            scanf("%lf", &exchangeRate);
+                if (scanf("%d", &currencyChoice) != 1) {
+                    printf("Invalid input. Please enter a number from 1-6.\n");
+
+                    while (getchar() != '\n');
+                    currencyChoice = 0;
+                }
+
+                if (currencyChoice < 1 || currencyChoice > 6) {
+                    printf("Please select a currency from 1-6.\n");
+                }
+
+            } while (currencyChoice < 1 || currencyChoice > 6);
+
+            do {
+                printf("Exchange Rate: ");
+
+                if (scanf("%lf", &exchangeRate) != 1) {
+                    printf("Invalid input. Please enter a valid exchange rate.\n");
+
+                    while (getchar() != '\n');
+                    exchangeRate = -1;
+                }
+
+                if (exchangeRate < 0) {
+                    printf("Exchange rate cannot be negative.\n");
+                }
+
+            } while (exchangeRate < 0);
 
             printf("\nSelect Foreign Currency = [%d]\n",
                    currencyChoice);
@@ -148,7 +253,11 @@ int main() {
 
             break;
 
+
+        /* SHOW INTEREST AMOUNT */
         case 6:
+            printf("***\n");
+
             printf("Show Interest Amount\n");
             printf("Interest Amount = 0.00\n");
 
@@ -156,6 +265,8 @@ int main() {
 
 
         default:
+            printf("***\n");
+
             printf("Invalid choice. Please select 1-6.\n");
 
             break;
