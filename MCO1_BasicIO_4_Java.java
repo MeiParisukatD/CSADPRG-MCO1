@@ -15,7 +15,7 @@ public class MCO1_BasicIO_4_Java {
         return INPUT.nextLine();
     }
 
-  private static String readNonBlankName(String prompt) {
+    private static String readNonBlankName(String prompt) {
         while (true) {
             String name = readLine(prompt);
             if (!name.trim().isEmpty()) {
@@ -68,14 +68,14 @@ public class MCO1_BasicIO_4_Java {
 
     private static void displayRegisterAccountName() {
         System.out.println("Register Account Name");
-        String accountName = readLine("Account Name: ");
+        String accountName = readNonBlankName("Account Name: ");
         System.out.println("***");
         System.out.printf("Account Name = %s%n%n", accountName);
     }
 
     private static void displayDepositAmount() {
         System.out.println("Deposit Amount");
-        String accountName = readLine("Account Name: ");
+        String accountName = readNonBlankName("Account Name: ");
         System.out.println("Current Balance: 1000.00");
         System.out.println("Currency: PHP");
         double depositAmount = readAmount("Deposit Amount: ");
@@ -86,7 +86,7 @@ public class MCO1_BasicIO_4_Java {
 
     private static void displayWithdrawAmount() {
         System.out.println("Withdraw Amount");
-        String accountName = readLine("Account Name: ");
+        String accountName = readNonBlankName("Account Name: ");
         System.out.println("Current Balance: 1000.00");
         System.out.println("Currency: PHP");
         double withdrawAmount = readAmount("Withdraw Amount: ");
