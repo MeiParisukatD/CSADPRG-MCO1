@@ -74,8 +74,9 @@ int main() {
     printf("[1] Register Account Name\n");
     printf("[2] Deposit Amount\n");
     printf("[3] Withdraw Amount\n");
-    printf("[4] Record Exchange Rates\n");
-    printf("[5] Currency Exchange\n");
+    printf("[4] Currency Exchange\n");
+    printf("[5] Record Exchange Rates\n");
+    printf("[6] Show Interest Amount\n");
 
     do {
         printf("\nChoice: ");
