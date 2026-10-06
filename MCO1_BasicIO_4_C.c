@@ -86,11 +86,11 @@ int main() {
         }
         flushLine();
 
-        if (choice < 1 || choice > 5) {
-            printf("Invalid choice. Please select 1-5.\n");
+        if (choice < 1 || choice > 6) {
+            printf("Invalid choice. Please select 1-6.\n");
         }
 
-    } while (choice < 1 || choice > 5);
+    } while (choice < 1 || choice > 6);
 
     printf("\n***\n");
     printf("Choice = %d\n", choice);

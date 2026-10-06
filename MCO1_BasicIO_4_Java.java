@@ -149,11 +149,6 @@ public class MCO1_BasicIO_4_Java {
         System.out.printf(Locale.US, "Source Amount (PHP) = %.2f%n", sourceAmount);
     }
 
-    private static void displayInterestAmount() {
-        System.out.println("Show Interest Amount");
-        System.out.println("Interest Amount = 0.00");
-    }
-
     public static void main(String[] args) {
         displayMainMenu();
         displayRegisterAccountName();
@@ -161,6 +156,5 @@ public class MCO1_BasicIO_4_Java {
         displayWithdrawAmount();
         displayRecordExchangeRate();
         displayCurrencyExchange();
-        displayInterestAmount();
     }
 }
