@@ -29,57 +29,38 @@ account$name    <- NULL
 account$balance <- 0
 
 # input validators
-stdin_con <- NULL
-
-read_line <- function(prompt) {
-  if (interactive()) {
-    return(readline(prompt))
-  }
-  cat(prompt)
-  if (is.null(stdin_con)) {
-    stdin_con <<- file("stdin", open = "r")
-  }
-  line <- readLines(stdin_con, n = 1, warn = FALSE)
-  if (length(line) == 0) {
-    cat("\nNo more input. Exiting.\n")
-    quit(save = "no")
-  }
-  cat(line, "\n", sep = "")
-  return(line)
-}
-
 read_positive_number <- function(prompt) {
-  value <- suppressWarnings(as.numeric(trimws(read_line(prompt))))
+  value <- suppressWarnings(as.numeric(trimws(readline(prompt))))
   while (is.na(value) || !is.finite(value) || value <= 0) {
     cat("Invalid input. Please enter a number greater than 0.\n")
-    value <- suppressWarnings(as.numeric(trimws(read_line(prompt))))
+    value <- suppressWarnings(as.numeric(trimws(readline(prompt))))
   }
   return(value)
 }
 
 read_days <- function(prompt) {
-  value <- suppressWarnings(as.numeric(trimws(read_line(prompt))))
-  while (is.na(value) || !is.finite(value) || value < 1 || value != floor(value)) {
-    cat("Invalid input. Please enter a whole number of days (1 or more).\n")
-    value <- suppressWarnings(as.numeric(trimws(read_line(prompt))))
+  value <- suppressWarnings(as.numeric(trimws(readline(prompt))))
+  while (is.na(value) || !is.finite(value) || value < 1 || value > 3650 || value != floor(value)) {
+    cat("Invalid input. Please enter a whole number of days (1 to 3650).\n")
+    value <- suppressWarnings(as.numeric(trimws(readline(prompt))))
   }
   return(as.integer(value))
 }
 
 read_name <- function(prompt) {
-  value <- trimws(read_line(prompt))
+  value <- trimws(readline(prompt))
   while (value == "") {
     cat("Invalid input. Name cannot be blank.\n")
-    value <- trimws(read_line(prompt))
+    value <- trimws(readline(prompt))
   }
   return(value)
 }
 
 read_choice <- function(prompt, valid, error_msg) {
-  choice <- trimws(read_line(prompt))
+  choice <- trimws(readline(prompt))
   while (!(choice %in% valid)) {
     cat(error_msg, "\n\n", sep = "")
-    choice <- trimws(read_line(prompt))
+    choice <- trimws(readline(prompt))
   }
   return(choice)
 }
@@ -221,7 +202,7 @@ currency_exchange <- function() {
     another <- read_yes_no("Convert another currency (Y/N)? ")
     cat("\n")
   }
-  return(FALSE)
+  return(TRUE)
 }
 
 # Record Exchange Rate
