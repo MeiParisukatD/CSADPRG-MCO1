@@ -10,7 +10,7 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Scanner;
 
-public final class MCO1_BankingCurrency_Java {
+public final class MP_4_Java {
     private static final BigDecimal OPENING_BALANCE = new BigDecimal("0.00");
     private static final BigDecimal ANNUAL_INTEREST_RATE = new BigDecimal("0.05");
     private static final BigDecimal DAYS_PER_YEAR = new BigDecimal("365");
@@ -52,7 +52,7 @@ public final class MCO1_BankingCurrency_Java {
         }
     }
 
-    private MCO1_BankingCurrency_Java() {
+    private MP_4_Java() {
         // PHP is the base currency, so its conversion rate is always one.
         phpPerCurrency.put(Currency.PHP, BigDecimal.ONE);
         phpPerCurrency.put(Currency.USD, new BigDecimal("52.00"));
@@ -63,7 +63,7 @@ public final class MCO1_BankingCurrency_Java {
     }
 
     public static void main(String[] args) {
-        new MCO1_BankingCurrency_Java().run();
+        new MP_4_Java().run();
     }
 
     private void run() {
