@@ -7,22 +7,19 @@ Paradigm(s): Procedural (using Java's class structure)
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Scanner;
 
-public final class MP_4_Java {
-    private static final BigDecimal OPENING_BALANCE = new BigDecimal("1000.00");
+public final class MCO1_BankingCurrency_Java {
+    private static final BigDecimal OPENING_BALANCE = new BigDecimal("0.00");
     private static final BigDecimal ANNUAL_INTEREST_RATE = new BigDecimal("0.05");
     private static final BigDecimal DAYS_PER_YEAR = new BigDecimal("365");
     private static final int MAX_INTEREST_DAYS = 3650;
 
     private final Scanner input = new Scanner(System.in);
-    private final Map<String, BankAccount> accountsByName = new LinkedHashMap<>();
+    private BankAccount account;
     private final EnumMap<Currency, BigDecimal> phpPerCurrency =
             new EnumMap<>(Currency.class);
-    private int nextAccountNumber = 1;
 
     private enum Currency {
         PHP("Philippine Peso", "PHP"),
@@ -46,12 +43,10 @@ public final class MP_4_Java {
     }
 
     private static final class BankAccount {
-        private final String accountNumber;
         private final String accountName;
         private BigDecimal balancePHP;
 
-        private BankAccount(String accountNumber, String accountName) {
-            this.accountNumber = accountNumber;
+        private BankAccount(String accountName) {
             this.accountName = accountName;
             this.balancePHP = OPENING_BALANCE;
         }
@@ -60,6 +55,11 @@ public final class MP_4_Java {
     private MCO1_BankingCurrency_Java() {
         // PHP is the base currency, so its conversion rate is always one.
         phpPerCurrency.put(Currency.PHP, BigDecimal.ONE);
+        phpPerCurrency.put(Currency.USD, new BigDecimal("52.00"));
+        phpPerCurrency.put(Currency.JPY, new BigDecimal("0.35"));
+        phpPerCurrency.put(Currency.GBP, new BigDecimal("70.00"));
+        phpPerCurrency.put(Currency.EUR, new BigDecimal("60.00"));
+        phpPerCurrency.put(Currency.CNY, new BigDecimal("7.20"));
     }
 
     public static void main(String[] args) {
@@ -103,7 +103,6 @@ public final class MP_4_Java {
 
     private void displayMainMenu() {
         System.out.println();
-        System.out.println("Main Menu");
         System.out.println("Select Transaction:");
         System.out.println("[1] Register Account Name");
         System.out.println("[2] Deposit Amount");
@@ -116,37 +115,31 @@ public final class MP_4_Java {
     private void registerAccount() {
         System.out.println();
         System.out.println("Register Account Name");
-        String accountName = readNonBlank("Account Name: ");
-        String key = accountKey(accountName);
-
-        if (accountsByName.containsKey(key)) {
-            BankAccount existing = accountsByName.get(key);
-            System.out.println("An account with that name is already registered.");
-            printAccountSummary(existing);
+        if (account != null) {
+            System.out.println("An account is already registered.");
+            printAccountSummary(account);
             return;
         }
 
-        String accountNumber = String.format(Locale.ROOT, "ACC-%04d", nextAccountNumber++);
-        BankAccount account = new BankAccount(accountNumber, accountName);
-        accountsByName.put(key, account);
+        String accountName = readNonBlank("Account Name: ");
+        account = new BankAccount(accountName);
 
         System.out.println("Account registered successfully.");
         printAccountSummary(account);
-        System.out.println("Opening Balance: " + money(account.balancePHP) + " PHP");
+        System.out.println("Current Balance: " + money(account.balancePHP));
     }
 
     private void depositAmount() {
         System.out.println();
         System.out.println("Deposit Amount");
-        BankAccount account = promptAccount();
-        if (account == null) {
+        if (!requireRegisteredAccount()) {
             return;
         }
 
         printAccountSummary(account);
         System.out.println("Current Balance: " + money(account.balancePHP));
         System.out.println("Currency: PHP (account balance)");
-        Currency currency = promptCurrency("Select Deposit Currency:");
+        Currency currency = promptCurrency("Select Deposit Currency:", "Currency Choice: ");
         BigDecimal rate = rateToPHP(currency);
         if (rate == null) {
             return;
@@ -168,15 +161,14 @@ public final class MP_4_Java {
     private void withdrawAmount() {
         System.out.println();
         System.out.println("Withdraw Amount");
-        BankAccount account = promptAccount();
-        if (account == null) {
+        if (!requireRegisteredAccount()) {
             return;
         }
 
         printAccountSummary(account);
         System.out.println("Current Balance: " + money(account.balancePHP));
         System.out.println("Currency: PHP (account balance)");
-        Currency currency = promptCurrency("Select Withdrawal Currency:");
+        Currency currency = promptCurrency("Select Withdrawal Currency:", "Currency Choice: ");
         BigDecimal rate = rateToPHP(currency);
         if (rate == null) {
             return;
@@ -203,8 +195,7 @@ public final class MP_4_Java {
 
     private void recordExchangeRate() {
         System.out.println();
-        System.out.println("Record Exchange Rate");
-        Currency currency = promptCurrency("Select Currency:");
+        Currency currency = promptCurrency("Record Exchange Rate", "Select Foreign Currency: ");
 
         if (currency == Currency.PHP) {
             System.out.println("PHP is the base currency. Its rate is fixed at 1.00.");
@@ -237,15 +228,14 @@ public final class MP_4_Java {
     private void convertOneCurrency() {
         System.out.println();
         System.out.println("Foreign Currency Exchange");
-        Currency sourceCurrency = promptCurrency("Source Currency Options:");
+        Currency sourceCurrency = promptCurrency("Source Currency Options:", "Source Currency: ");
         BigDecimal sourceRate = rateToPHP(sourceCurrency);
         if (sourceRate == null) {
             return;
         }
 
-        BigDecimal sourceAmount = readPositiveDecimal(
-                "Source Amount (" + sourceCurrency.code + "): ");
-        Currency targetCurrency = promptCurrency("Exchanged Currency Options:");
+        BigDecimal sourceAmount = readPositiveDecimal("Source Amount: ");
+        Currency targetCurrency = promptCurrency("Exchange Currency Options:", "Exchange Currency: ");
         BigDecimal targetRate = rateToPHP(targetCurrency);
         if (targetRate == null) {
             return;
@@ -253,28 +243,24 @@ public final class MP_4_Java {
 
         // Rates are stored as PHP per unit, so convert through PHP as the base.
         BigDecimal targetAmount = convertAmount(sourceAmount, sourceRate, targetRate);
-        System.out.println("Source Currency = " + sourceCurrency.label());
-        System.out.println("Source Amount = " + money(sourceAmount) + " " + sourceCurrency.code);
-        System.out.println("Exchange Currency = " + targetCurrency.label());
-        System.out.println("Exchange Amount = " + money(targetAmount) + " " + targetCurrency.code);
+        System.out.println("Exchange Amount: " + money(targetAmount));
     }
 
     private void showInterestAmount() {
         System.out.println();
         System.out.println("Show Interest Amount");
-        BankAccount account = promptAccount();
-        if (account == null) {
+        if (!requireRegisteredAccount()) {
             return;
         }
 
         printAccountSummary(account);
         System.out.println("Current Balance: " + money(account.balancePHP));
         System.out.println("Currency: PHP");
-        System.out.println("Interest Rate: 5% per annum");
-        int days = readInteger("Total Number of Days: ", 1, MAX_INTEREST_DAYS);
+        System.out.println("Interest Rate: 5%");
+        int days = readInteger("Enter number of days: ", 1, MAX_INTEREST_DAYS);
+        System.out.println("Total Number of Days: " + days + " days");
 
         BigDecimal projectedBalance = account.balancePHP;
-        BigDecimal totalInterest = BigDecimal.ZERO.setScale(2);
         System.out.println();
         System.out.println("Day | Interest | Balance |");
         for (int day = 1; day <= days; day++) {
@@ -282,37 +268,26 @@ public final class MP_4_Java {
             BigDecimal dailyInterest = calculateDailyInterest(projectedBalance);
             projectedBalance = projectedBalance.add(dailyInterest)
                     .setScale(2, RoundingMode.HALF_UP);
-            totalInterest = totalInterest.add(dailyInterest).setScale(2, RoundingMode.HALF_UP);
             System.out.println(day + " | " + money(dailyInterest) + " | "
                     + money(projectedBalance) + " |");
         }
-
-        System.out.println("Expected Interest = " + money(totalInterest) + " PHP");
-        System.out.println("Projected Balance = " + money(projectedBalance) + " PHP");
-        System.out.println("The projection does not change the actual account balance.");
     }
 
-    private BankAccount promptAccount() {
-        if (accountsByName.isEmpty()) {
-            System.out.println("No account is registered. Register an account first.");
-            return null;
-        }
-
-        String name = readNonBlank("Account Name: ");
-        BankAccount account = accountsByName.get(accountKey(name));
+    private boolean requireRegisteredAccount() {
         if (account == null) {
-            System.out.println("Account not found. Check the name or register the account first.");
+            System.out.println("Register first.");
+            return false;
         }
-        return account;
+        return true;
     }
 
-    private Currency promptCurrency(String heading) {
+    private Currency promptCurrency(String heading, String prompt) {
         System.out.println(heading);
         Currency[] currencies = Currency.values();
         for (int index = 0; index < currencies.length; index++) {
             System.out.println("[" + (index + 1) + "] " + currencies[index].label());
         }
-        int choice = readInteger("Currency Choice: ", 1, currencies.length);
+        int choice = readInteger(prompt, 1, currencies.length);
         return currencies[choice - 1];
     }
 
@@ -407,12 +382,7 @@ public final class MP_4_Java {
         }
     }
 
-    private static String accountKey(String accountName) {
-        return accountName.trim().toLowerCase(Locale.ROOT);
-    }
-
     private static void printAccountSummary(BankAccount account) {
-        System.out.println("Account Number: " + account.accountNumber);
         System.out.println("Account Name: " + account.accountName);
     }
 
