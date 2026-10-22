@@ -1,9 +1,8 @@
-/*
- * Major Course Output #1: Banking and Currency Exchange Application
- * Team: Hila, Katigbak, Mesa, Tumbocon
- * Language: Java
- */
-
+ /*********************
+Last names: Hila, Katigbak, Mesa, Tumbocon
+Language: Java
+Paradigm(s): Procedural (using Java's class structure)
+*********************/
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,7 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
-public final class MCO1_BankingCurrency_Java {
+public final class MP_4_Java {
     private static final BigDecimal OPENING_BALANCE = new BigDecimal("1000.00");
     private static final BigDecimal ANNUAL_INTEREST_RATE = new BigDecimal("0.05");
     private static final BigDecimal DAYS_PER_YEAR = new BigDecimal("365");
