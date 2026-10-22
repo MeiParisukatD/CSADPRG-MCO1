@@ -11,7 +11,7 @@ Paradigm(s): Imperative / Procedural
 #include <string.h>
 
 #define NUM_CURRENCIES 6
-#define BASE_INDEX     0          
+#define BASE_INDEX     0          /* PHP */
 #define NAME_LEN       100
 #define LINE_LEN       256
 #define ANNUAL_RATE    0.05
@@ -39,8 +39,9 @@ static const Currency CURRENCIES[NUM_CURRENCIES] = {
     {"CNY", "Chinese Yuan Renminni"}
 };
 
-/* PHP per 1 unit. 0.0 means "not recorded yet". */
-static double rates[NUM_CURRENCIES] = {1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+/* PHP per 1 unit of each currency. Defaults are the group's agreed rates;
+ * they can be changed with [5] Record Exchange Rates. */
+static double rates[NUM_CURRENCIES] = {1.00, 52.00, 0.35, 70.00, 60.00, 7.20};
 
 static Account account;
 
@@ -164,10 +165,29 @@ static void registerAccount(void)
         printf("Name cannot be empty.\n");
     }
     if (account.registered && strcmp(account.name, buf) != 0) {
+        /* A new name starts a fresh account. */
         memset(account.balances, 0, sizeof account.balances);
     }
     strcpy(account.name, buf);
     account.registered = 1;
+}
+
+/* Asks for a currency, then an amount, and returns the amount converted to PHP.
+ * Returns 0 if the chosen currency has no usable rate. */
+static int askAmountInPhp(const char *amountPrompt, double *phpAmount)
+{
+    int c = chooseCurrency("Currency: ");
+    if (rates[c] <= 0.0) {
+        printf("Exchange rate not recorded for %s. Use [5] Record Exchange Rates first.\n",
+               CURRENCIES[c].code);
+        return 0;
+    }
+    double amt = roundCents(readPositiveAmount(amountPrompt));
+    *phpAmount = roundCents(amt * rates[c]);
+    if (c != BASE_INDEX) {
+        printf("Converted Amount: %.2f PHP\n", *phpAmount);
+    }
+    return 1;
 }
 
 static void deposit(void)
@@ -175,14 +195,14 @@ static void deposit(void)
     printf("Deposit Amount\n");
     if (!requireAccount()) return;
 
-    int c = BASE_INDEX;
     printf("Account Name: %s\n", account.name);
-    printf("Current Balance: %.2f\n", account.balances[c]);
-    printf("Currency: %s\n\n", CURRENCIES[c].code);
+    printf("Current Balance: %.2f\n\n", account.balances[BASE_INDEX]);
 
-    double amt = roundCents(readPositiveAmount("Deposit Amount: "));
-    account.balances[c] += amt;
-    printf("Updated Balance: %.2f\n", account.balances[c]);
+    double php;
+    if (!askAmountInPhp("Deposit Amount: ", &php)) return;
+
+    account.balances[BASE_INDEX] = roundCents(account.balances[BASE_INDEX] + php);
+    printf("Updated Balance: %.2f\n", account.balances[BASE_INDEX]);
 }
 
 static void withdraw(void)
@@ -190,19 +210,19 @@ static void withdraw(void)
     printf("Withdraw Amount\n");
     if (!requireAccount()) return;
 
-    int c = BASE_INDEX;
     printf("Account Name: %s\n", account.name);
-    printf("Current Balance: %.2f\n", account.balances[c]);
-    printf("Currency: %s\n\n", CURRENCIES[c].code);
+    printf("Current Balance: %.2f\n\n", account.balances[BASE_INDEX]);
 
-    double amt = roundCents(readPositiveAmount("Withdraw Amount: "));
-    if (amt > account.balances[c]) {
+    double php;
+    if (!askAmountInPhp("Withdraw Amount: ", &php)) return;
+
+    if (php > account.balances[BASE_INDEX]) {
         printf("Insufficient funds. Withdrawal cancelled.\n");
-        printf("Updated Balance: %.2f\n", account.balances[c]);
+        printf("Updated Balance: %.2f\n", account.balances[BASE_INDEX]);
         return;
     }
-    account.balances[c] = roundCents(account.balances[c] - amt);
-    printf("Updated Balance: %.2f\n", account.balances[c]);
+    account.balances[BASE_INDEX] = roundCents(account.balances[BASE_INDEX] - php);
+    printf("Updated Balance: %.2f\n", account.balances[BASE_INDEX]);
 }
 
 static void recordExchangeRate(void)
@@ -249,7 +269,8 @@ static void showInterest(void)
     printf("Currency: %s\n", CURRENCIES[c].code);
     printf("Interest Rate: %.0f%%\n\n", ANNUAL_RATE * 100.0);
 
-    int days = readInt("Total Number of Days: ", 1, MAX_DAYS);
+    int days = readInt("Enter Number of Days: ", 1, MAX_DAYS);
+    printf("\nTotal Number of Days: %d days\n", days);
 
     printf("\nDay | Interest | Balance |\n");
     double balance = account.balances[c];
@@ -260,6 +281,7 @@ static void showInterest(void)
     }
 }
 
+/* ---------- main ---------- */
 
 static void printMainMenu(void)
 {
@@ -295,6 +317,6 @@ int main(void)
             break;
         }
     }
-    printf("Goodbye.\n");
+    printf("Thank you for using the Banking and Currency Exchange Application.\n");
     return 0;
 }
